@@ -45,6 +45,8 @@ def make_compile(dir_, filename):
     subprocess.call(cmd.split())
     cmd = "pythran-config --compiler --cflags"
     p = subprocess.run(cmd.split(), capture_output=True)
+    if dir_ == "":
+        dir_ = "."
     cmd = f"{p.stdout.decode()} -std=c++14 -O3 {dir_}/{filename}.cpp -o {dir_}/{filename}"
     subprocess.call(cmd.split())
 
