@@ -1,7 +1,7 @@
 import sys
 from pyatcoder.atcoder_pythran import main as pythran_main
 from pyatcoder.tools.envgen import main as envgen_main
-# from pyatcoder.tools.submit import main as submit_main
+from pyatcoder.tools.submit import main as submit_main
 
 
 def usage_message():
@@ -27,7 +27,7 @@ def main():
         pass
 
     if sys.argv[1] == "submit":
-        # submit_main(prog, args)
+        submit_main(prog, args)
         pass
 
 
