@@ -20,7 +20,7 @@ def main():
     args = sys.argv[2:]
 
     if sys.argv[1] == "pythran":
-        pythran_main()
+        pythran_main(prog, args)
 
     if sys.argv[1] == "gen":
         envgen_main(prog, args)

@@ -43,14 +43,14 @@ def make_compile(dir_, filename):
 
     cmd = "pythran -e {}/{}.py -o {}/{}.hpp".format(dir_, filename, dir_, filename)
     subprocess.call(cmd.split())
-    cmd = "pythran-config -- --cflags"
+    cmd = "pythran-config --compiler --cflags"
     p = subprocess.run(cmd.split(), capture_output=True)
     cmd = f"{p.stdout.decode()} -std=c++14 -O3 {dir_}/{filename}.cpp -o {dir_}/{filename}"
     subprocess.call(cmd.split())
 
 
-def main():
-    path_ = os.path.abspath(sys.argv[-1])
+def main(prog, args):
+    path_ = os.path.abspath(args[-1])
     dir_ = os.path.dirname(path_)
     filename = os.path.splitext(os.path.basename(path_))[0]
     make_compile(dir_, filename)
