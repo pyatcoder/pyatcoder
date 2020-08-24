@@ -11,15 +11,11 @@ from colorama import Fore
 from pyatcoder.client.atcoder import AtCoderClient, Contest, LoginError, PageNotFoundError
 from pyatcoder.client.models.problem import Problem
 from pyatcoder.client.models.problem_content import InputFormatDetectionError, SampleDetectionError
-from pyatcoder.common.language import Language,ALL_LANGUAGES, PYTHON
 from pyatcoder.common.logging import logger
 from pyatcoder.config.config import Config
 from pyatcoder.fileutils.create_contest_file import create_examples
 from pyatcoder.tools import get_default_config_path
-from pyatcoder.tools.models.metadata import Metadata
 from pyatcoder.tools.utils import with_color
-
-DEFAULT_WORKSPACE_DIR_PATH = '~/atcoder-workspace/'
 
 
 class BannedFileDetectedError(Exception):
@@ -44,14 +40,10 @@ def prepare_procedure(atcoder_client: AtCoderClient,
                       config: Config,
                       contest_dir_path: str):
 
-    lang_name = config.etc_config.lang
     pid = problem.get_alphabet().lower()
 
     def emit_error(text):
         logger.error(with_color("Problem {}: {}".format(pid, text), Fore.RED))
-
-    def emit_warning(text):
-        logger.warning("Problem {}: {}".format(pid, text))
 
     def emit_info(text):
         logger.info("Problem {}: {}".format(pid, text))
@@ -71,23 +63,16 @@ def prepare_procedure(atcoder_client: AtCoderClient,
         emit_info("No samples.")
     else:
         create_examples(content.get_samples(), contest_dir_path,
-                        pid + config.etc_config.in_example_format, pid + config.etc_config.out_example_format)
+                        config.etc_config.in_example_format + pid + '{}.txt',
+                        config.etc_config.out_example_format + pid + '{}.txt')
         emit_info("Created examples.")
-
-    lang = Language.from_name(lang_name)
-    code_file_path = os.path.join(
-        contest_dir_path,
-        f"{pid}.{lang.extension}")
-
-    if not os.path.exists(code_file_path):
-        with open(code_file_path, 'w') as f:
-            f.write('\n')
 
     output_splitter()
 
 
 def prepare_contest(atcoder_client: AtCoderClient,
                     contest_id: str,
+                    contest_dir_path: str,
                     config: Config,
                     retry_delay_secs: float = 1.5,
                     retry_max_delay_secs: float = 60,
@@ -114,12 +99,6 @@ def prepare_contest(atcoder_client: AtCoderClient,
 
     output_splitter()
 
-    workspace_root_path = os.path.expanduser(config.etc_config.workspace_dir)
-    contest_dir_path = os.path.join(
-        workspace_root_path,
-        contest_id)
-    os.makedirs(contest_dir_path, exist_ok=True)
-
     problems = []
     for argv in tasks:
         problem = argv[1]
@@ -130,19 +109,6 @@ def prepare_contest(atcoder_client: AtCoderClient,
             # Prevent the script from stopping
             print(traceback.format_exc(), file=sys.stderr)
             pass
-
-    # Save metadata
-    lang = config.etc_config.lang
-    metadata_path = os.path.join(contest_dir_path, "metadata.json")
-    Metadata(contest_id,
-             problems,
-             config.etc_config.in_example_format.replace("{}", "*"),
-             config.etc_config.out_example_format.replace("{}", "*"),
-             lang
-             ).save_to(metadata_path)
-
-    logger.info(f"Problem {contest_id}: Saved metadata to {metadata_path}")
-
 
 
 USER_CONFIG_PATH = os.path.join(
@@ -173,21 +139,18 @@ def main(prog, args):
         prog=prog,
         formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument("contest_id",
-                        help="Contest ID (e.g. arc001)")
+    parser.add_argument("-c", "--contest",
+                        help="Contest ID (e.g. arc001)"
+                        "[Default] Current directory name")
 
     parser.add_argument("--without-login",
                         action="store_true",
                         help="Download data without login")
 
-    parser.add_argument("--workspace",
-                        help="Path to workspace's root directory. This script will create files"
-                             " in {{WORKSPACE}}/{{contest_name}}/{{alphabet}}/ e.g. ./your-workspace/arc001/A/\n"
-                             "[Default] {}".format(DEFAULT_WORKSPACE_DIR_PATH))
-
-    parser.add_argument("--lang",
-                        help="Programming language of your template code, {}.\n"
-                        .format(" or ".join([lang.name for lang in ALL_LANGUAGES])) + "[Default] {}".format(PYTHON.name))
+    parser.add_argument("--path",
+                        help="Path to example data directory. This script will create examples"
+                             " in path/\n"
+                             "[Default] Current directory")
 
     parser.add_argument("--save-no-session-cache",
                         action="store_true",
@@ -204,12 +167,16 @@ def main(prog, args):
     args = parser.parse_args(args)
     config = get_config(args)
 
-    try:
-        import AccountInformation  # noqa
-        raise BannedFileDetectedError(
-            "We abolished the logic with AccountInformation.py. Please delete the file.")
-    except ImportError:
-        pass
+    contest_dir_path = os.getcwd()
+
+    if args.contest:
+        contest_id = args.contest
+    else:
+        contest_id = os.path.basename(os.path.normpath(contest_dir_path))
+
+    if args.path:
+        contest_dir_path = args.path
+
 
     client = AtCoderClient()
     if not config.etc_config.download_without_login:
@@ -225,7 +192,8 @@ def main(prog, args):
         logger.info("Downloading data without login.")
 
     prepare_contest(client,
-                    args.contest_id,
+                    contest_id,
+                    contest_dir_path,
                     config)
 
 

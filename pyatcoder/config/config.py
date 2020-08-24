@@ -35,8 +35,6 @@ class Config:
                                                  dict(
                                                      download_without_login=args.without_login,
                                                      save_no_session_cache=args.save_no_session_cache,
-                                                     workspace_dir=args.workspace,
-                                                     lang=args.lang
                                                  ))
 
         return Config(

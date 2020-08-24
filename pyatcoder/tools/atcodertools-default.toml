@@ -1,7 +1,5 @@
 [etc]
 download_without_login=false
 save_no_session_cache=false
-in_example_format="{}.txt"
-out_example_format="out{}.txt"
-workspace_dir = '~/atcoder-workspace/'
-lang = 'python'
+in_example_format=""
+out_example_format="out_"
