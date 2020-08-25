@@ -6,9 +6,9 @@ from pyatcoder.tools.submit import main as submit_main
 
 def usage_message():
     print("Usage:")
-    print("pyatcoder pythran inputs -- Create code for submit to Atcoder compiled by pythran")
-    print("pytcoder gen inputs -- to generate workspace")
-    print("pytcoder submit inputs -- to submit a code to atcoder")
+    print("pyatcoder pythran file -- Create code for submit to Atcoder compiled by pythran")
+    print("pytcoder gen -- to generate example")
+    print("pytcoder submit file -- to submit a code to atcoder")
 
 
 def main():

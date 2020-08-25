@@ -1,9 +1,8 @@
 import getpass
 import os
 import re
-import warnings
 from http.cookiejar import LWPCookieJar
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 import requests
 from bs4 import BeautifulSoup
@@ -12,9 +11,10 @@ from pyatcoder.client.models.contest import Contest
 from pyatcoder.client.models.problem import Problem
 from pyatcoder.client.models.problem_content import ProblemContent, InputFormatDetectionError, SampleDetectionError
 from pyatcoder.client.models.submission import Submission
-from pyatcoder.common.language import Language
 from pyatcoder.common.logging import logger
 from pyatcoder.fileutils.artifacts_cache import get_cache_file_path
+
+SUBMISSION_LANG_PATTERN = {'python': 'Python.*', 'pypy3': 'PyPy3.*', 'cython': 'Cython.*'}
 
 
 class LoginError(Exception):
@@ -155,16 +155,8 @@ class AtCoderClient(metaclass=Singleton):
         contest_ids = sorted(contest_ids)
         return [Contest(contest_id) for contest_id in contest_ids]
 
-    def submit_source_code(self, contest: Contest, problem: Problem, lang: Union[str, Language], source: str) -> Submission:
-        if isinstance(lang, str):
-            warnings.warn(
-                "Parameter lang as a str object is deprecated. "
-                "Please use 'atcodertools.common.language.Language' object instead",
-                UserWarning)
-            lang_option_pattern = lang
-        else:
-            lang_option_pattern = lang.submission_lang_pattern
-
+    def submit_source_code(self, contest: Contest, problem: Problem, lang: str, source: str) -> Submission:
+        lang_option_pattern = re.compile(SUBMISSION_LANG_PATTERN[lang])
         resp = self._request(contest.get_submit_url())
 
         soup = BeautifulSoup(resp.text, "html.parser")

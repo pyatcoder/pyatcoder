@@ -11,9 +11,8 @@ from pyatcoder.client.atcoder import AtCoderClient, LoginError
 from pyatcoder.common.logging import logger
 from pyatcoder.client.models.contest import Contest
 from pyatcoder.client.models.problem import Problem
-from pyatcoder.common.language import Language
 
-from pyatcoder.tools.models.metadata import Metadata
+ALL_LANGUAGES = {'python', 'pypy3', 'cython'}
 
 
 def main(prog, args, credential_supplier=None, use_local_session_cache=True) -> bool:
@@ -21,8 +20,21 @@ def main(prog, args, credential_supplier=None, use_local_session_cache=True) -> 
         prog=prog,
         formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument("code_path",
-                        help="submit code")
+    parser.add_argument("file",
+                        help="提出するソースコードの PATH")
+
+    parser.add_argument("-c", "--contest",
+                        help="コンテスト ID (e.g. abc270)"
+                        "[Default] カレントディレクトリ名")
+
+    parser.add_argument("-p", "--problem",
+                        help="問題番号 (e.g. a)、大文字でも小文字でも可"
+                        "[Default] ファイル名の先頭文字")
+
+    parser.add_argument("--language", "-l",
+                        help="提出するプログラム言語\n"
+                             "python, pypy2, pypy3, cython の４つから選択"
+                        "[Default] file の拡張子が .py の場合は python、.pyx の場合は cython。")
 
     parser.add_argument("--timeout", '-t',
                         help="Timeout for each test cases (sec) [Default] 1",
@@ -35,15 +47,6 @@ def main(prog, args, credential_supplier=None, use_local_session_cache=True) -> 
                         default=False)
 
     args = parser.parse_args(args)
-    basename = os.path.basename(args.code_path)
-    dir = os.path.dirname(args.code_path)
-
-    try:
-        metadata = Metadata.load_from(os.path.join(dir, "metadata.json"))
-    except IOError:
-        logger.error(
-            '"metadata.json" is not found! You need metadata to use this submission functionality.')
-        return False
 
     try:
         client = AtCoderClient()
@@ -55,16 +58,37 @@ def main(prog, args, credential_supplier=None, use_local_session_cache=True) -> 
         logger.error("Login failed. Try again.")
         return False
 
-    contest = Contest(metadata.contest_id)
-    p = basename[0]
-    problem = Problem(contest=contest, alphabet=p.upper(), problem_id=(metadata.contest_id + '_' + p))
-    lang = Language.from_name(metadata.lang)
-    with open(args.code_path, 'r') as f:
+    if args.contest:
+        contest_id = args.contest
+    else:
+        contest_id = os.path.basename(os.path.normpath(os.getcwd()))
+    if args.problem:
+        p = args.problem.lower()
+    else:
+        p = os.path.basename(args.file)[0]
+    problem = Problem(contest=contest_id, alphabet=p.upper(), problem_id=(contest_id + '_' + p))
+    if args.language:
+        lang = args.language
+        if lang not in ALL_LANGUAGES:
+            logger.error("プログラム言語は、'python', 'pypy3', 'cython'にしか対応していません。")
+            return False
+    else:
+        ext = os.path.splitext('ab/abc.py')[1]
+        if ext == ".py":
+            lang = 'python'
+        elif ext == ".pyx":
+            lang = 'cython'
+        else:
+            logger.error("対応している拡張子は .py 及び .pyx です。")
+            return False
+
+    with open(args.file, 'r') as f:
         source = f.read()
     logger.info(
-        "Submitting {} as {}".format(args.code_path, metadata.lang))
+        "Submitting {} as {}".format(args.file, lang))
+    contest = Contest(contest_id)
     submission = client.submit_source_code(
-        contest, problem, lang, source)
+        Contest(contest), problem, lang, source)
     logger.info("{} {}".format(
         with_color("Done!", Fore.LIGHTGREEN_EX),
         contest.get_submissions_url(submission)))
