@@ -88,7 +88,7 @@ def main(prog, args, credential_supplier=None, use_local_session_cache=True) -> 
         "Submitting {} as {}".format(args.file, lang))
     contest = Contest(contest_id)
     submission = client.submit_source_code(
-        Contest(contest), problem, lang, source)
+        contest, problem, lang, source)
     logger.info("{} {}".format(
         with_color("Done!", Fore.LIGHTGREEN_EX),
         contest.get_submissions_url(submission)))
