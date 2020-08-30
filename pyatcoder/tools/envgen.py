@@ -166,6 +166,7 @@ def main(prog, args):
 
     args = parser.parse_args(args)
     config = get_config(args)
+    print(config)
 
     contest_dir_path = os.getcwd()
 

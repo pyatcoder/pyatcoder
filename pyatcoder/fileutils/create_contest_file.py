@@ -23,7 +23,6 @@ def create_examples(examples: List[Sample],
         return os.path.join(target_dir_path, file)
 
     for index, example in enumerate(examples):
-        print(f'in_example_name_format: {in_example_name_format}')
         create_example(example,
                        gen_path(in_example_name_format.format(index + 1)),
                        gen_path(out_example_name_format.format(index + 1)))
