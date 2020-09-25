@@ -166,7 +166,6 @@ def main(prog, args):
 
     args = parser.parse_args(args)
     config = get_config(args)
-    print(config)
 
     contest_dir_path = os.getcwd()
 
@@ -177,7 +176,6 @@ def main(prog, args):
 
     if args.path:
         contest_dir_path = args.path
-
 
     client = AtCoderClient()
     if not config.etc_config.download_without_login:

@@ -1,4 +1,5 @@
 import sys
+from pyatcoder.atcoder_combine import main as combine_main
 from pyatcoder.atcoder_pythran import main as pythran_main
 from pyatcoder.tools.envgen import main as envgen_main
 from pyatcoder.tools.submit import main as submit_main
@@ -6,23 +7,28 @@ from pyatcoder.tools.submit import main as submit_main
 
 def usage_message():
     print("Usage:")
+    print("pyatcoder acl -- numba acl をファイルに追加して提出できるようによう")
+    print("pyatcoder aot -- Create code for submit to Atcoder compiled by pythran")
     print("pyatcoder pythran file -- Create code for submit to Atcoder compiled by pythran")
     print("pytcoder gen -- to generate example")
     print("pytcoder submit file -- to submit a code to atcoder")
 
 
 def main():
-    if len(sys.argv) < 2 or sys.argv[1] not in ("pythran", "gen", "submit"):
+    if len(sys.argv) < 2 or sys.argv[1] not in ("acl", "aot", "pythran", "sample", "submit"):
         usage_message()
         sys.exit(-1)
 
     prog = " ".join(sys.argv[:2])
     args = sys.argv[2:]
 
+    if sys.argv[1] == "combine" or sys.argv[1] == "aot":
+        combine_main(sys.argv[:2], args)
+
     if sys.argv[1] == "pythran":
         pythran_main(prog, args)
 
-    if sys.argv[1] == "gen":
+    if sys.argv[1] == "sample":
         envgen_main(prog, args)
         pass
 
