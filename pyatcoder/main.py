@@ -7,15 +7,15 @@ from pyatcoder.tools.submit import main as submit_main
 
 def usage_message():
     print("Usage:")
-    print("pyatcoder acl -- numba acl をファイルに追加して提出できるようによう")
+    print("pyatcoder combine -- numba acl をファイルに追加して提出できるようによう")
     print("pyatcoder aot -- Create code for submit to Atcoder compiled by pythran")
     print("pyatcoder pythran file -- Create code for submit to Atcoder compiled by pythran")
-    print("pytcoder gen -- to generate example")
+    print("pytcoder sample -- to generate example")
     print("pytcoder submit file -- to submit a code to atcoder")
 
 
 def main():
-    if len(sys.argv) < 2 or sys.argv[1] not in ("acl", "aot", "pythran", "sample", "submit"):
+    if len(sys.argv) < 2 or sys.argv[1] not in ("combine", "aot", "pythran", "sample", "submit"):
         usage_message()
         sys.exit(-1)
 

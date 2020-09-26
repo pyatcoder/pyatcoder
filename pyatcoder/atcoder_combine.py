@@ -103,7 +103,6 @@ def main(prog, args):
     else:
         parser.add_argument('-m', '--module', default=ACL_NAME + '.py', help='module code')
         parser.add_argument('-o', '--output', default='combined_aot.py', help='Single combined code')
-    parser.add_argument('-o', '--output', default='combined_aot.py', help='Single combined code')
     args = parser.parse_args()
 
     with open(args.src) as f:
