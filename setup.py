@@ -11,7 +11,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='pyatcoder',
-    version='0.1.1',
+    version='0.2.0',
     description='AtCoder Python Tools',
     classifiers=[  # Optional
         # How mature is this project? Common values are
