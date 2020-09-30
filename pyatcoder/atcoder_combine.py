@@ -77,8 +77,8 @@ def execute_output(aot, src, output, my_module, my_module_path, lib_paths, out_p
     with open(output, 'w') as f:
         f.write(header)
         if aot:
-            f.write(f'    from {my_module_path[:-3]} import cc')
-            f.write('    cc.compile()')
+            f.write(f'    from {my_module_path[:-3]} import cc\n')
+            f.write('    cc.compile()\n')
         f.write(src)
         f.write("\n'''")
         if my_module:
