@@ -101,9 +101,9 @@ def main(prog, args):
         parser.add_argument('-m', '--module', help='module code')
         parser.add_argument('-o', '--output', default='combined.py', help='Single combined code')
     else:
-        parser.add_argument('-m', '--module', default=ACL_NAME + '.py', help='module code')
+        parser.add_argument('-m', '--module', default='nbmodule.py', help='module code')
         parser.add_argument('-o', '--output', default='combined_aot.py', help='Single combined code')
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     with open(args.src) as f:
         src = f.read()
