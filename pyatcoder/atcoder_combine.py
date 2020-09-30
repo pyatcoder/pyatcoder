@@ -129,7 +129,7 @@ def main(prog, args):
     lib_paths, out_paths = get_modules(imports)
 
     if lib_paths:
-        execute_output(prog[1] == 'aot', args.output, my_module, my_module_path, lib_paths, out_paths)
+        execute_output(prog[1] == 'aot', src, args.output, my_module, my_module_path, lib_paths, out_paths)
 
 
 if __name__ == '__main__':
