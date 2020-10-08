@@ -7,8 +7,8 @@ from pyatcoder.tools.submit import main as submit_main
 
 def usage_message():
     print("Usage:")
-    print("pyatcoder combine -- numba acl をファイルに追加して提出できるようによう")
-    print("pyatcoder aot -- Create code for submit to Atcoder compiled by pythran")
+    print("pyatcoder combine -- numba acl をファイルに追加して提出できるようにする")
+    print("pyatcoder aot -- numba acl をファイルに追加して提出できるようにする　AOT用")
     print("pyatcoder pythran file -- Create code for submit to Atcoder compiled by pythran")
     print("pytcoder sample -- to generate example")
     print("pytcoder submit file -- to submit a code to atcoder")
