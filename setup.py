@@ -28,7 +28,7 @@ setup(
     # keywords='sample setuptools development',
     packages=find_packages(exclude=('tests',)),
     python_requires='>=3.6, <4',
-    install_requires=['requests', 'beautifulsoup4', 'toml'],  # Optional
+    install_requires=['requests', 'beautifulsoup4', 'toml', 'colorama'],  # Optional
     entry_points={
         'console_scripts': [
             'pyatcoder=pyatcoder.main:main',
