@@ -53,7 +53,7 @@ def main(prog, args):
     with open(args.module) as f:
         src += f.read()
 
-    src += '\n###binary\n'
+    src += f'\n###binary {out}\n'
 
     with open(out, 'rb') as f_bin:
         so = f_bin.read()
