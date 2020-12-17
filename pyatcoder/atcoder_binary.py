@@ -6,8 +6,29 @@ from importlib import import_module
 import sys
 
 
-header = """import sys
+header1 = """import sys
 if sys.argv[-1] == 'ONLINE_JUDGE':
+    import os,gzip,base64
+    with open(__file__) as f:
+        while True:
+            line = f.readline()
+            if line:
+                if line.startswith('###binary'):
+                    fname = line.split()[1]
+                    gz = f.readline()
+                    break
+            else:
+                exit()
+    bin = gzip.decompress(base64.b64decode(gz[2:-1].encode()))
+    with open(fname, 'wb') as f:
+            f.write(bin)
+    os.chmod(fname, 0o775)
+"""
+
+header2 = """
+try:
+    import {0} 
+except:
     import os,gzip,base64
     with open(__file__) as f:
         while True:
@@ -44,7 +65,11 @@ def main(prog, args):
     module = import_module(module_name)
     module.cc.compile()
 
-    src = header
+    if prog[1] == 'binary':
+        src = header1
+    else:
+        src = header2.format(module_name)
+
     with open(args.src) as f:
         src += f.read()
 
